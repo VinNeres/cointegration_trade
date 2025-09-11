@@ -80,8 +80,20 @@ rolling_zscore <- function(x, window) {
   # Usar zoo::rollapply para média e desvio padrão.
   # O `align = "right"` garante que não haja lookahead bias.
   # `fill = NA` coloca NAs no início, onde não há dados suficientes.
-  m <- zoo::rollapply(x_numeric, width = window, FUN = mean, align = "right", fill = NA)
-  s <- zoo::rollapply(x_numeric, width = window, FUN = sd, align = "right", fill = NA)
+  m <- zoo::rollapply(
+    x_numeric,
+    width = window,
+    FUN = mean,
+    align = "right",
+    fill = NA
+  )
+  s <- zoo::rollapply(
+    x_numeric,
+    width = window,
+    FUN = sd,
+    align = "right",
+    fill = NA
+  )
 
   # Calcular o z-score
   z_numeric <- (x_numeric - m) / s
@@ -112,7 +124,13 @@ ewma_zscore <- function(x, halflife) {
   # como a `ewm().var()` do pandas. A abordagem mais comum em R é usar um desvio padrão móvel
   # simples com a mesma janela de tempo equivalente.
   window_equiv <- floor(n_ema)
-  std_roll <- zoo::rollapply(x_numeric, width = window_equiv, FUN = sd, align = "right", fill = NA)
+  std_roll <- zoo::rollapply(
+    x_numeric,
+    width = window_equiv,
+    FUN = sd,
+    align = "right",
+    fill = NA
+  )
 
   # Calcular o z-score
   z_numeric <- (x_numeric - mean_ema) / std_roll
@@ -142,7 +160,14 @@ fetch_data <- function(tickers, start, end, save_path = NULL) {
 
   # quantmod::getSymbols downloads data and stores it in an environment
   data_env <- new.env()
-  getSymbols(tickers, src = "yahoo", from = start, to = end, auto.assign = TRUE, env = data_env)
+  getSymbols(
+    tickers,
+    src = "yahoo",
+    from = start,
+    to = end,
+    auto.assign = TRUE,
+    env = data_env
+  )
 
   # Extract the Adjusted close price for each ticker and merge
   price_list <- lapply(ls(data_env), function(ticker) {
@@ -177,7 +202,12 @@ fetch_data <- function(tickers, start, end, save_path = NULL) {
 # @param min_obs Minimum number of observations required
 # @param trend The deterministic trend assumption for the test
 # @return A list containing the p-value matrix and a list of significant pairs
-find_cointegrated_pairs <- function(data, significance = 0.05, min_obs = 252, trend = "c") {
+find_cointegrated_pairs <- function(
+  data,
+  significance = 0.05,
+  min_obs = 252,
+  trend = "c"
+) {
   require(urca)
   require(aTSA)
 
@@ -231,7 +261,10 @@ find_cointegrated_pairs <- function(data, significance = 0.05, min_obs = 252, tr
 
       pval_matrix[i, j] <- pval
       if (pval < significance) {
-        pairs <- append(pairs, list(list(y = cols[i], x = cols[j], p_value = pval)))
+        pairs <- append(
+          pairs,
+          list(list(y = cols[i], x = cols[j], p_value = pval))
+        )
       }
     }
   }
@@ -371,14 +404,30 @@ backtest_pairs <- function(
 performance_metrics <- function(returns, freq = 252) {
   rets <- na.omit(returns)
   if (length(rets) == 0) {
-    return(list(CAGR = 0, Ann_Mean = 0, Ann_Vol = 0, Sharpe = 0, Sortino = 0, Max_DD = 0, Win_Rate = 0))
+    return(list(
+      CAGR = 0,
+      Ann_Mean = 0,
+      Ann_Vol = 0,
+      Sharpe = 0,
+      Sortino = 0,
+      Max_DD = 0,
+      Win_Rate = 0
+    ))
   }
 
   # Using PerformanceAnalytics functions
   cagr <- as.numeric(Return.annualized(rets, scale = freq, geometric = TRUE))
-  ann_mean <- as.numeric(Return.annualized(rets, scale = freq, geometric = FALSE))
+  ann_mean <- as.numeric(Return.annualized(
+    rets,
+    scale = freq,
+    geometric = FALSE
+  ))
   ann_vol <- as.numeric(StdDev.annualized(rets, scale = freq))
-  sharpe <- as.numeric(SharpeRatio.annualized(rets, scale = freq, geometric = FALSE))
+  sharpe <- as.numeric(SharpeRatio.annualized(
+    rets,
+    scale = freq,
+    geometric = FALSE
+  ))
   sortino <- as.numeric(SortinoRatio(rets))
   max_dd <- as.numeric(maxDrawdown(rets))
   win_rate <- length(rets[rets > 0]) / length(rets)
@@ -401,7 +450,12 @@ performance_metrics <- function(returns, freq = 252) {
 # Plot a z-score series with bands
 # @param zscore An xts object of z-scores
 # @param ... Other configuration parameters
-plot_zscore <- function(zscore, entry_z = 2.0, exit_z = 0.5, title = "Z-score Spread") {
+plot_zscore <- function(
+  zscore,
+  entry_z = 2.0,
+  exit_z = 0.5,
+  title = "Z-score Spread"
+) {
   # Convert xts to data.frame for ggplot2
   df_z <- data.frame(
     Date = index(zscore),
