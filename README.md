@@ -35,10 +35,10 @@ To validate a pair, this project employs two main tests:
 1.  **Engle-Granger Two-Step Test:**
     -   **Step 1:** Estimate the long-run relationship through a simple linear regression:
 
-    $
-    Y_t = \alpha + \beta X_t + \epsilon_t
-    $
-
+$
+Y_t = \alpha + \beta X_t + \epsilon_t
+$
+\\
     -   **Step 2:** Extract the regression residuals, $\hat{\epsilon}_t$, and test them for stationarity using the **Augmented Dickey-Fuller (ADF) Test**. If residuals are stationary (p-value < 0.05), the assets are considered cointegrated.
 
 2.  **Johansen Test:**
@@ -58,10 +58,8 @@ The workflow implemented in this code follows these steps:
 3.  **Signal Generation:**
     -   Normalize the spread using the **Z-score** to create a standardized measure of deviation:
 
-    $
-    \text{Z-score}_t = \frac{\text{Spread}_t - \text{RollingMean}(\text{Spread})}{\text{RollingStdDev}(\text{Spread})}
-    $
-        
+$\text{Z-score}_t = \frac{\text{Spread}_t - \text{RollingMean}(\text{Spread})}{\text{RollingStdDev}(\text{Spread})}$
+\\
     -   Trading signals are generated based on Z-score thresholds (e.g., enter at ±2.0, exit at 0).
 4.  **Backtesting:**
     -   Perform historical simulation of the strategy by applying the trading signals to price data.
