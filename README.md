@@ -35,9 +35,11 @@ Para validar um par, este projeto utiliza dois testes principais:
 
 1.  **Teste de Engle-Granger (Dois Passos):**
     -   **Passo 1:** Estima-se a relação de longo prazo através de uma regressão linear simples:
+
         $$
         Y_t = \alpha + \beta X_t + \epsilon_t
         $$
+
     -   **Passo 2:** Os resíduos da regressão, $\hat{\epsilon}_t$, são extraídos e testados para estacionariedade usando o **Teste Augmented Dickey-Fuller (ADF)**. Se os resíduos forem estacionários (p-valor < 0.05), os ativos são considerados cointegrados.
 
 2.  **Teste de Johansen:**
@@ -56,9 +58,11 @@ O fluxo de trabalho implementado neste código segue os seguintes passos:
     -   Aplicação dos testes de cointegração (Engle-Granger e Johansen) para validar o par.
 3.  **Geração de Sinais:**
     -   O spread é normalizado usando o **Z-score** para criar um indicador padronizado de desvio:
+
         $$
         \text{Z-score}_t = \frac{\text{Spread}_t - \text{MédiaMóvel}(\text{Spread})}{\text{DesvioPadrãoMóvel}(\text{Spread})}
         $$
+        
     -   Sinais de entrada e saída são gerados com base em limiares (thresholds) de Z-score (ex: entrar em ±2.0, sair em 0).
 4.  **Backtesting:**
     -   Simulação histórica da estratégia, aplicando os sinais de negociação aos dados de preços.

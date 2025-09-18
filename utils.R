@@ -8,7 +8,7 @@
 # - Plotting helpers
 
 # ==============================================================================
-#  STEP 0: REQUIRED PACKAGES
+#  STEP 1: REQUIRED PACKAGES
 # ==============================================================================
 # install.packages(c("quantmod", "urca", "dplyr", "tidyr", "zoo", "ggplot2", "PerformanceAnalytics", "purrr", "logger"))
 library(quantmod)
@@ -20,18 +20,6 @@ library(ggplot2)
 library(PerformanceAnalytics)
 library(purrr)
 library(logger)
-
-# ==============================================================================
-#  1. Logging and Configuration
-# ==============================================================================
-
-# R's 'logger' package is a good equivalent to Python's logging
-log_layout(layout_glue_colors)
-log_info("Pairs Trading Utility Functions Loaded")
-
-# R does not have a direct equivalent of a frozen dataclass.
-# The closest is a named list, which is the standard way to handle configuration.
-# We will pass these parameters as arguments with default values.
 
 # ==============================================================================
 #  2. Helper Functions
@@ -277,7 +265,6 @@ find_cointegrated_pairs <- function(
   return(list(pval_matrix = pval_matrix, significant_pairs = pairs))
 }
 
-
 # ==============================================================================
 #  5. Backtesting
 # ==============================================================================
@@ -392,7 +379,6 @@ backtest_pairs <- function(
   return(list(equity = equity, ret = net_ret, zscore = z))
 }
 
-
 # ==============================================================================
 #  6. Performance Metrics
 # ==============================================================================
@@ -478,10 +464,3 @@ plot_zscore <- function(
   print(p)
   invisible(p) # Return the plot object
 }
-
-
-ipca <- rbcb::get_series(code = c("ipca" = 433), start_date = "2025-01-01") %>%
-  mutate(
-    ipca = ipca / 100 + 1,
-    ipca_acum = cumprod(ipca)
-  )
