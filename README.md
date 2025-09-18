@@ -39,7 +39,7 @@ $$
 Y_t = \alpha + \beta X_t + \epsilon_t
 $$
 
-\\
+\
     -   **Step 2:** Extract the regression residuals, $\hat{\epsilon}_t$, and test them for stationarity using the **Augmented Dickey-Fuller (ADF) Test**. If residuals are stationary (p-value < 0.05), the assets are considered cointegrated.
 
 2.  **Johansen Test:**
@@ -63,7 +63,7 @@ $$
 \text{Z-score}_t = \frac{\text{Spread}_t - \text{RollingMean}(\text{Spread})}{\text{RollingStdDev}(\text{Spread})}
 $$
 
-\\
+\
     -   Trading signals are generated based on Z-score thresholds (e.g., enter at ±2.0, exit at 0).
 4.  **Backtesting:**
     -   Perform historical simulation of the strategy by applying the trading signals to price data.
