@@ -1,76 +1,75 @@
-# Análise e Backtesting de Estratégias de Pairs Trading
+# Pairs Trading Strategy Analysis and Backtesting
 
-Este repositório contém um projeto em R para a identificação, validação estatística e backtesting de estratégias de *Pairs Trading* no mercado de ações. O objetivo é fornecer um framework claro e educacional para a implementação de uma das estratégias de arbitragem estatística mais clássicas.
+This repository contains an R project for identifying, statistically validating, and backtesting *Pairs Trading* strategies in the stock market. The goal is to provide a clear and educational framework for implementing one of the most classical statistical arbitrage strategies.
 
-## O que é Pairs Trading?
+## What is Pairs Trading?
 
-*Pairs Trading* é uma estratégia de investimento **neutra ao mercado** que busca lucrar com desequilíbrios temporários na relação de preços de dois ativos que são historicamente correlacionados.
+*Pairs Trading* is a **market-neutral** investment strategy that seeks to profit from temporary mispricings in the relationship between two assets that are historically correlated.
 
-A lógica é simples:
-1.  **Identificar um Par:** Encontrar dois ativos cujos preços "dançam juntos" ao longo do tempo.
-2.  **Monitorar o Desvio:** Quando os preços se afastam anormalmente um do outro, um ativo fica "caro" em relação ao seu par.
-3.  **Apostar na Convergência:** O trader abre uma posição *short* (vendida) no ativo caro e uma posição *long* (comprada) no ativo barato.
-4.  **Realizar o Lucro:** Quando a relação de preços retorna à sua média histórica, as posições são fechadas, gerando lucro independentemente da direção geral do mercado.
+The logic is simple:
+1.  **Identify a Pair:** Find two assets whose prices “move together” over time.
+2.  **Monitor the Spread:** When prices deviate abnormally, one asset becomes “expensive” relative to its pair.
+3.  **Bet on Convergence:** The trader goes *short* on the expensive asset and *long* on the cheap one.
+4.  **Realize Profit:** When the price relationship reverts to its historical mean, positions are closed, yielding profit regardless of overall market direction.
 
-
-*Analogia do Bêbado e o Cachorro: os caminhos individuais são aleatórios (não-estacionários), mas a distância entre eles (a coleira, ou o "spread") é estável e reverte à média (estacionária).*
+*Analogy — The Drunk and the Dog: their individual paths are random (non-stationary), but the distance between them (the leash, or the “spread”) is stable and mean-reverting (stationary).*
 
 ---
 
-## A Base Estatística: Cointegração
+## The Statistical Foundation: Cointegration
 
-Uma simples correlação não é suficiente para garantir que dois ativos formem um bom par. Preços de ações são tipicamente **não-estacionários** (seguem um "passeio aleatório"). O alicerce estatístico do Pairs Trading é o conceito de **cointegração**.
+Simple correlation is not sufficient to guarantee that two assets form a good pair. Stock prices are typically **non-stationary** (they follow a random walk). The statistical foundation of Pairs Trading is the concept of **cointegration**.
 
-Duas séries não-estacionárias, $Y_t$ e $X_t$, são ditas cointegradas se existe uma combinação linear entre elas que é **estacionária**.
+Two non-stationary series, $Y_t$ and $X_t$, are said to be cointegrated if there exists a linear combination between them that is **stationary**:
 
 $$
 Z_t = Y_t - \beta X_t
 $$
 
-Onde $Z_t$ é o **spread** (ou resíduo) e $\beta$ é o **hedge ratio**. Se $Z_t$ for estacionário, significa que existe uma relação de equilíbrio de longo prazo entre $Y_t$ e $X_t$, e qualquer desvio dessa relação tende a ser corrigido.
+Where $Z_t$ is the **spread** (or residual) and $\beta$ is the **hedge ratio**. If $Z_t$ is stationary, it implies a long-run equilibrium relationship between $Y_t$ and $X_t$, and any deviation from that equilibrium tends to be corrected.
 
-### Testes de Cointegração Utilizados
+### Cointegration Tests Used
 
-Para validar um par, este projeto utiliza dois testes principais:
+To validate a pair, this project employs two main tests:
 
-1.  **Teste de Engle-Granger (Dois Passos):**
-    -   **Passo 1:** Estima-se a relação de longo prazo através de uma regressão linear simples:
+1.  **Engle-Granger Two-Step Test:**
+    -   **Step 1:** Estimate the long-run relationship through a simple linear regression:
 
         $$
         Y_t = \alpha + \beta X_t + \epsilon_t
         $$
 
-    -   **Passo 2:** Os resíduos da regressão, $\hat{\epsilon}_t$, são extraídos e testados para estacionariedade usando o **Teste Augmented Dickey-Fuller (ADF)**. Se os resíduos forem estacionários (p-valor < 0.05), os ativos são considerados cointegrados.
+    -   **Step 2:** Extract the regression residuals, $\hat{\epsilon}_t$, and test them for stationarity using the **Augmented Dickey-Fuller (ADF) Test**. If residuals are stationary (p-value < 0.05), the assets are considered cointegrated.
 
-2.  **Teste de Johansen:**
-    -   Uma abordagem mais robusta que modela os ativos como um sistema (Modelo Vetorial de Auto-Regressão - VAR) e determina o número de relações de cointegração existentes. É especialmente útil para análises com mais de dois ativos.
+2.  **Johansen Test:**
+    -   A more robust approach that models the assets as a system (Vector Auto-Regression - VAR) and determines the number of cointegration relationships. It is especially useful when analyzing more than two assets.
 
 ---
 
-## Workflow da Estratégia
+## Strategy Workflow
 
-O fluxo de trabalho implementado neste código segue os seguintes passos:
+The workflow implemented in this code follows these steps:
 
-1.  **Seleção de Pares:** Coleta de dados históricos de preços para ativos candidatos.
-2.  **Validação Estatística:**
-    -   Cálculo do hedge ratio ($\beta$) via regressão linear.
-    -   Cálculo do spread (resíduos da regressão).
-    -   Aplicação dos testes de cointegração (Engle-Granger e Johansen) para validar o par.
-3.  **Geração de Sinais:**
-    -   O spread é normalizado usando o **Z-score** para criar um indicador padronizado de desvio:
+1.  **Pair Selection:** Collect historical price data for candidate assets.
+2.  **Statistical Validation:**
+    -   Estimate the hedge ratio ($\beta$) via linear regression.
+    -   Compute the spread (regression residuals).
+    -   Apply cointegration tests (Engle-Granger and Johansen) to validate the pair.
+3.  **Signal Generation:**
+    -   Normalize the spread using the **Z-score** to create a standardized measure of deviation:
 
         $$
-        \text{Z-score}_t = \frac{\text{Spread}_t - \text{MédiaMóvel}(\text{Spread})}{\text{DesvioPadrãoMóvel}(\text{Spread})}
+        \text{Z-score}_t = \frac{\text{Spread}_t - \text{RollingMean}(\text{Spread})}{\text{RollingStdDev}(\text{Spread})}
         $$
         
-    -   Sinais de entrada e saída são gerados com base em limiares (thresholds) de Z-score (ex: entrar em ±2.0, sair em 0).
+    -   Trading signals are generated based on Z-score thresholds (e.g., enter at ±2.0, exit at 0).
 4.  **Backtesting:**
-    -   Simulação histórica da estratégia, aplicando os sinais de negociação aos dados de preços.
-    -   Cálculo dos retornos diários e construção da curva de capital.
-5.  **Análise de Performance:**
-    -   Cálculo de métricas de desempenho chave:
-        -   Retorno Anualizado
-        -   Volatilidade Anualizada
-        -   Índice de Sharpe
-        -   Máximo Drawdown
-        -   Taxa de Acerto (Win Rate)
+    -   Perform historical simulation of the strategy by applying the trading signals to price data.
+    -   Calculate daily returns and build the equity curve.
+5.  **Performance Analysis:**
+    -   Compute key performance metrics:
+        -   Annualized Return
+        -   Annualized Volatility
+        -   Sharpe Ratio
+        -   Maximum Drawdown
+        -   Hit Rate (Win Rate)
